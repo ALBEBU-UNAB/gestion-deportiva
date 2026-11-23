@@ -1,0 +1,21 @@
+# Contraseñas y configuración privada
+.streamlit/secrets.toml
+**/secrets.toml
+.env
+.env.*
+
+# Archivos temporales
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Copias y archivos comprimidos
+*.zip
+*.bak
+*.log
+app_respaldo.py..py
+
+# Carpeta duplicada del inicio de sesión
+gestion_deportiva_login/
+configurar_password.py
