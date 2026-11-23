@@ -54,22 +54,17 @@ except Exception as exc:
  st.caption('Revisa el puerto, la contraseña y que MySQL esté funcionando. Consulta la terminal para detalles.')
  st.stop()<
 
-# Navegación principal: las consultas originales se conservan intactas.
-# MENÚ PRINCIPAL
-
 
 # AUTENTICACIÓN DE USUARIOS
 usuario = solicitar_inicio_sesion(engine)
 mostrar_sesion(usuario)
 
-# Mostrar la aplicación solo después del inicio de sesión
 st.title('🏟️ Sistema de Gestión Deportiva')
 st.caption('Consultas R1 a R12 de Gestión Deportiva')
 st.success('Conectado a MySQL')
 
 # MENÚ PRINCIPAL
 seccion = st.sidebar.radio(
-
     "Menú principal",
     [
         "Consultas R1-R12",
