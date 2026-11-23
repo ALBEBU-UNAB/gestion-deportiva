@@ -52,7 +52,7 @@ try:
 except Exception as exc:
  st.error('No se pudo conectar a MySQL. Comprueba que el servidor esté encendido, que la base esté importada y que la contraseña sea correcta.')
  st.caption('Revisa el puerto, la contraseña y que MySQL esté funcionando. Consulta la terminal para detalles.')
- st.stop()<
+ st.stop()
 
 
 # AUTENTICACIÓN DE USUARIOS
