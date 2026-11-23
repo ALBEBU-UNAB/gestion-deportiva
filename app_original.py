@@ -7,10 +7,10 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 from crud_participantes import mostrar_crud_participantes
 from inscripciones import mostrar_inscripciones
+from usuarios import solicitar_inicio_sesion, mostrar_sesion
 
 st.set_page_config(page_title='Gestión Deportiva | R1-R12', page_icon='🏟️', layout='wide')
-st.title('🏟️ Sistema de Gestión Deportiva')
-st.caption('Consultas R1 a R12 de la base MySQL gestion_deportiva_fase2_CORREGIDA_2')
+
 
 CONSULTAS = {
  'R1': ('Actividades más populares', 'sp_actividades_populares', 'fechas'),
@@ -52,10 +52,15 @@ try:
 except Exception as exc:
  st.error('No se pudo conectar a MySQL. Comprueba que el servidor esté encendido, que la base esté importada y que la contraseña sea correcta.')
  st.caption('Revisa el puerto, la contraseña y que MySQL esté funcionando. Consulta la terminal para detalles.')
- st.stop()
+ st.stop()<
 
 # Navegación principal: las consultas originales se conservan intactas.
 # MENÚ PRINCIPAL
+
+usuario = solicitar_inicio_sesion(engine)
+mostrar_sesion(usuario)
+st.title('🏟️ Sistema de Gestión Deportiva')
+st.caption('Consultas R1 a R12 de la base MySQL gestion_deportiva_fase2_CORREGIDA_2')
 seccion = st.sidebar.radio(
     "Menú principal",
     [
