@@ -15,7 +15,7 @@ def mostrar_dashboard(engine):
             total_inscripciones = conn.execute(text('SELECT COUNT(*) FROM inscripcion')).scalar_one()
             cupos_libres = conn.execute(text('SELECT COALESCE(SUM(cupos_disponibles), 0) FROM programacion')).scalar_one()
 
-            populares = pd.read_sql(text('''
+            populares = pd.read_sql(text("""
                 SELECT a.nombre AS actividad, COUNT(i.id_inscripcion) AS inscripciones
                 FROM actividad_deportiva a
                 JOIN programacion pr ON pr.id_actividad = a.id_actividad
@@ -23,9 +23,9 @@ def mostrar_dashboard(engine):
                 GROUP BY a.id_actividad, a.nombre
                 ORDER BY inscripciones DESC, a.nombre
                 LIMIT 10
-            '''), conn)
+            """), conn)
 
-            ocupacion = pd.read_sql(text('''
+            ocupacion = pd.read_sql(text("""
                 SELECT c.nombre AS centro,
                        COALESCE(ins.inscripciones, 0) AS inscripciones,
                        COALESCE(cupos.cupos_libres, 0) AS cupos_libres
@@ -41,9 +41,9 @@ def mostrar_dashboard(engine):
                     FROM programacion GROUP BY id_centro
                 ) cupos ON cupos.id_centro = c.id_centro
                 ORDER BY inscripciones DESC, c.nombre
-            '''), conn)
+            """), conn)
 
-            ingresos = pd.read_sql(text('''
+            ingresos = pd.read_sql(text("""
                 SELECT a.nombre AS actividad,
                        COUNT(i.id_inscripcion) AS inscripciones,
                        COALESCE(COUNT(i.id_inscripcion) * a.valor_inscripcion, 0) AS ingreso_estimado
@@ -53,7 +53,18 @@ def mostrar_dashboard(engine):
                 GROUP BY a.id_actividad, a.nombre, a.valor_inscripcion
                 ORDER BY ingreso_estimado DESC
                 LIMIT 10
-            '''), conn)
+            """), conn)
+
+            # Cuarta pregunta de negocio: disponibilidad de cupos.
+            disponibilidad = pd.read_sql(text("""
+                SELECT a.nombre AS actividad,
+                       COALESCE(SUM(pr.cupos_disponibles), 0) AS cupos_libres
+                FROM actividad_deportiva a
+                LEFT JOIN programacion pr ON pr.id_actividad = a.id_actividad
+                GROUP BY a.id_actividad, a.nombre
+                ORDER BY cupos_libres DESC, a.nombre
+            """), conn)
+
     except SQLAlchemyError as exc:
         st.error('No se pudo cargar el dashboard desde MySQL.')
         st.code(str(exc))
@@ -89,6 +100,16 @@ def mostrar_dashboard(engine):
         st.bar_chart(ingresos.set_index('actividad')['ingreso_estimado'])
         with st.expander('Ver datos de ingresos'):
             st.dataframe(ingresos, hide_index=True, use_container_width=True)
+    else:
+        st.info('No hay actividades registradas.')
+
+    st.subheader('4. Disponibilidad de cupos por actividad')
+    st.caption('Pregunta propuesta: ¿Qué actividades tienen más cupos disponibles para nuevos participantes?')
+    st.write('**Justificación:** ayuda a identificar actividades con capacidad libre y orientar su difusión y planificación.')
+    if not disponibilidad.empty:
+        st.bar_chart(disponibilidad.set_index('actividad')['cupos_libres'])
+        with st.expander('Ver datos de disponibilidad'):
+            st.dataframe(disponibilidad, hide_index=True, use_container_width=True)
     else:
         st.info('No hay actividades registradas.')
 
