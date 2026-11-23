@@ -19,3 +19,6 @@ app_respaldo.py..py
 # Carpeta duplicada del inicio de sesión
 gestion_deportiva_login/
 configurar_password.py
+
+.streamlit/
+app_respaldo_login.py
